@@ -87,11 +87,17 @@ class Admin:
                 print(f"Name: {user.name}, Account Number: {account.account_number}")
 
     def total_balance(self, bank):
-        total_balance = sum(account.balance for user in bank.users for account in user.accounts)
-        print(f"Total Available Balance: ${total_balance}")
+        total_balance = 0
+        for user in bank.users:
+            for account in user.accounts:
+                total_balance += account.balance
+        print(f"Total Available Balance is: ${total_balance}")
 
     def total_loan_amount(self, bank):
-        total_loan = sum(account.loan_taken for user in bank.users for account in user.accounts)
+        total_loan = 0
+        for user in bank.users:
+            for account in user.accounts:
+                total_loan += account.loan_taken
         print(f"Total Loan Amount: ${total_loan}")
 
     def toggle_loan_feature(self, bank, status):
@@ -100,6 +106,9 @@ class Admin:
             print("Loan feature enabled.")
         else:
             print("Loan feature disabled.")
+    
+    def transfer_amount(self):
+        pass
 
 class User:
     def __init__(self, name, password):
@@ -157,47 +166,54 @@ while True:
                 break
 
         if isAdmin:
-            print(" ")
-            print("Enter your options:")
-            print("1 : Create Account")
-            print("2 : Delete Account")
-            print("3 : See All User Accounts")
-            print("4 : Check Total Available Balance")
-            print("5 : Check Total Loan Amount")
-            print("6 : Toggle Loan Feature")
-            print("7 : Logout")
+            while True:
+                print(" ")
+                print("Enter your options:")
+                print("1 : Create Account")
+                print("2 : Delete Account")
+                print("3 : See All User Accounts")
+                print("4 : Check Total Available Balance")
+                print("5 : Check Total Loan Amount")
+                print("6 : Toggle Loan Feature")
+                print("7 : Logout")
 
-            ch = int(input("Enter Option: "))
+                ch = int(input("Enter Option: "))
 
-            if ch == 1:
-                name = input("Enter User Name: ")
-                email = input("Enter Email: ")
-                account_type = input("Enter Account Type (s/c): ")
-                isAdmin.create_account(bank, name, email, account_type)
+                if ch == 1:
+                    name = input("Enter User Name: ")
+                    email = input("Enter Email: ")
+                    account_type = input("Enter Account Type (s/c): ")
+                    isAdmin.create_account(bank, name, email, account_type)
 
-            elif ch == 2:
-                account_number = input("Enter Account Number to Delete: ")
-                isAdmin.delete_account(bank, account_number)
+                elif ch == 2:
+                    account_number = input("Enter Account Number to Delete: ")
+                    isAdmin.delete_account(bank, account_number)
+                    
+                elif ch == 3:
+                    isAdmin.see_all_accounts(bank)
+                    if input("Press Enter to continue or 'x' to exit: ") == 'x':
+                        break
 
-            elif ch == 3:
-                isAdmin.see_all_accounts(bank)
+                elif ch == 4:
+                    isAdmin.total_balance(bank)
+                    if input("Press Enter to continue or 'x' to exit: ") == 'x':
+                        break
 
-            elif ch == 4:
-                isAdmin.total_balance(bank)
+                elif ch == 5:
+                    isAdmin.total_loan_amount(bank)
+                    if input("Press Enter to continue or 'x' to exit: ") == 'x':
+                        break
 
-            elif ch == 5:
-                isAdmin.total_loan_amount(bank)
+                elif ch == 6:
+                    status = input("Enter '0' to enable or '1' to disable loan feature: ")
+                    if status == '0':
+                        isAdmin.toggle_loan_feature(bank, True)
+                    elif status == '1':
+                        isAdmin.toggle_loan_feature(bank, False)
 
-            elif ch == 6:
-                status = input("Enter '0' to enable or '1' to disable loan feature: ")
-                if status == '0':
-                    isAdmin.toggle_loan_feature(bank, True)
-                elif status == '1':
-                    isAdmin.toggle_loan_feature(bank, False)
-
-            elif ch == 7:
-                print("Logged out.")
-                break
+                elif ch == 7:
+                    print("Logged out.")
+                    break
         else:
             print("Admin authentication failed. Please try again.")
 
@@ -211,98 +227,101 @@ while True:
                 break
 
         if isUser:
-            print("\nOptions:")
-            print("1 : Create Account")
-            print("2 : Deposit Amount")
-            print("3 : Withdraw Amount")
-            print("4 : Check Available Balance")
-            print("5 : Check Transaction History")
-            print("6 : Take Loan")
-            print("7 : Transfer Amount")
-            print("8 : Logout")
+            while True:
+                print(" ")
+                print("1 : Create Account")
+                print("2 : Deposit Amount")
+                print("3 : Withdraw Amount")
+                print("4 : Check Available Balance")
+                print("5 : Check Transaction History")
+                print("6 : Take Loan")
+                print("7 : Transfer Amount")
+                print("8 : Logout")
 
-            ch = int(input("Enter Option: "))
+                ch = int(input("Enter Option: "))
 
-            if ch == 1:
-                name = input("Enter User Name: ")
-                email = input("Enter Email: ")
-                account_type = input("Enter Account Type (s/c): ")
-                isUser.create_account(bank, name, email, account_type)
+                if ch == 1:
+                    name = input("Enter User Name: ")
+                    email = input("Enter Email: ")
+                    account_type = input("Enter Account Type (s/c): ")
+                    isUser.create_account(bank, name, email, account_type)
 
-            if ch == 2:
-                account_number = input("Enter Account Number: ")
-                amount = float(input("Enter Amount to Deposit: "))
-                found_account = None
-                for account in isUser.accounts:
-                    if account.account_number == account_number:
-                        found_account = account
-                        break
-                if found_account:
-                    isUser.deposit(found_account, amount)
-                else:
-                    print("Account not found.")
-
-
-            if ch == 3:
-                account_number = input("Enter Account Number: ")
-                amount = float(input("Enter Amount to Withdraw: "))
-                found_account = None
-                for account in isUser.accounts:
-                    if account.account_number == account_number:
-                        found_account = account
-                        break
-                if found_account:
-                    isUser.withdraw(found_account, amount)
-                else:
-                    print("Account not found.")
+                elif ch == 2:
+                    account_number = input("Enter Account Number: ")
+                    amount = float(input("Enter Amount to Deposit: "))
+                    found_account = None
+                    for account in isUser.accounts:
+                        if account.account_number == account_number:
+                            found_account = account
+                            break
+                    if found_account:
+                        isUser.deposit(found_account, amount)
+                    else:
+                        print("Account not found.")
 
 
-            if ch == 4:
-                account_number = input("Enter Account Number: ")
-                found_account = None
-                for account in isUser.accounts:
-                    if account.account_number == account_number:
-                        found_account = account
-                        break
-                if found_account:
-                    isUser.check_balance(found_account)
-                else:
-                    print("Account not found.")
+                elif ch == 3:
+                    account_number = input("Enter Account Number: ")
+                    amount = float(input("Enter Amount to Withdraw: "))
+                    found_account = None
+                    for account in isUser.accounts:
+                        if account.account_number == account_number:
+                            found_account = account
+                            break
+                    if found_account:
+                        isUser.withdraw(found_account, amount)
+                    else:
+                        print("Account not found.")
 
 
-            if ch == 5:
-                account_number = input("Enter Account Number: ")
-                found_account = None
-                for account in isUser.accounts:
-                    if account.account_number == account_number:
-                        found_account = account
-                        break
-                if found_account:
-                    isUser.check_transactions(found_account)
-                else:
-                    print("Account not found.")
+                elif ch == 4:
+                    account_number = input("Enter Account Number: ")
+                    found_account = None
+                    for account in isUser.accounts:
+                        if account.account_number == account_number:
+                            found_account = account
+                            break
+                    if found_account:
+                        isUser.check_balance(found_account)
+                    else:
+                        print("Account not found.")
 
 
-            if ch == 6:
-                account_number = input("Enter Account Number: ")
-                amount = float(input("Enter Loan Amount: "))
-                found_account = None
-                for account in isUser.accounts:
-                    if account.account_number == account_number:
-                        found_account = account
-                        break
-                if found_account:
-                    isUser.take_loan(found_account, amount)
-                else:
-                    print("Account not found.")
+                elif ch == 5:
+                    account_number = input("Enter Account Number: ")
+                    found_account = None
+                    for account in isUser.accounts:
+                        if account.account_number == account_number:
+                            found_account = account
+                            break
+                    if found_account:
+                        isUser.check_transactions(found_account)
+                    else:
+                        print("Account not found.")
 
 
-            if ch == 7:
-                print("Can't implemented")
+                elif ch == 6:
+                    account_number = input("Enter Account Number: ")
+                    amount = float(input("Enter Loan Amount: "))
+                    found_account = None
+                    for account in isUser.accounts:
+                        if account.account_number == account_number:
+                            found_account = account
+                            break
+                    if found_account:
+                        isUser.take_loan(found_account, amount)
+                    else:
+                        print("Account not found.")
 
-            elif ch == 8:
-                print("Logged out.")
-                break
+
+                elif ch == 7:
+                    print("Can't implemented")
+
+                elif ch == 8:
+                    print("Logged out.")
+                    break
+        else:
+            print("incorrect username or password")
 
     else:
         print("Invalid Option. Please enter a valid option")
