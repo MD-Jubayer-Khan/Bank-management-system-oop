@@ -60,8 +60,10 @@ class Admin:
 
     def create_account(self, bank, name, email, account_type):
         account = BankAccount(name, email, account_type)
-        bank.users.append(account)
-        print("Successfully created account.")
+        user = User(name, '')
+        user.accounts.append(account)
+        bank.users.append(user)
+        print(f'Account created successfully. Your account number is: {account.account_number}')
 
     def delete_account(self, bank, account_number):
         found_account = None
@@ -214,6 +216,9 @@ while True:
                 elif ch == 7:
                     print("Logged out.")
                     break
+                else:
+                    print("Invalid option")
+                    break
         else:
             print("Admin authentication failed. Please try again.")
 
@@ -316,9 +321,14 @@ while True:
 
                 elif ch == 7:
                     print("Can't implemented")
+                    if input("Press Enter to continue or 'x' to exit: ") == 'x':
+                        break
 
                 elif ch == 8:
                     print("Logged out.")
+                    break
+                else:
+                    print("Invalid option")
                     break
         else:
             print("incorrect username or password")
